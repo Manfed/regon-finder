@@ -28,3 +28,6 @@ nbdist/
 mvnw
 mvnw.cmd
 upload-dir/
+
+keystore*
+src/main/resources/application.properties
