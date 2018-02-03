@@ -32,7 +32,8 @@ public class HTTPSConfiguration {
     }
 
     private Connector initiateHttpConnector() {
-        Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
+        Connector connector = new Connector(
+                TomcatEmbeddedServletContainerFactory.DEFAULT_PROTOCOL);
         connector.setScheme("http");
         connector.setPort(8080);
         connector.setSecure(false);
