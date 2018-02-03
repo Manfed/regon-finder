@@ -3,6 +3,7 @@
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <title>Spring Security Example </title>
+    <sec:csrfMetaTags/>
 </head>
 <body>
 <div th:if="${param.error}">
@@ -12,6 +13,7 @@
     You have been logged out.
 </div>
 <form th:action="@{/login}" method="post">
+    <sec:csrfInput />
     <div><label> User Name : <input type="text" name="username"/> </label></div>
     <div><label> Password: <input type="password" name="password"/> </label></div>
     <div><input type="submit" value="Sign In"/></div>
