@@ -13,8 +13,13 @@ import regonfinder.location.County;
 import regonfinder.location.Place;
 import regonfinder.location.Voivodeship;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -34,17 +39,37 @@ public class RegonOptionsFactory {
     public static Map<String, Voivodeship> VOIVODESHIPS;
 
     public static void getVoivodeshipsData() {
-        System.setProperty("webdriver.chrome.driver", ApplicationConstants.CHROME_DRIVER_LOCATION);
-        WebDriver driver = new ChromeDriver();
-        driver.get(REGON_BROWSER_PAGE_ADDRESS);
+        Properties properties = new Properties();
 
-        clickAddressButton(driver);
+        try {
+            if (properties.getProperty(ApplicationConstants.LOCATION_PROPERTY_NAME) != null) {
 
-        List<String> voivodeshipNames = getDropdownItems(driver, VOIVODESHIP_DROPDOWN_ID);
-        VOIVODESHIPS = getVoivodeships(driver, voivodeshipNames);
+                    properties.load(new FileInputStream(ApplicationConstants.LOCATION_PROPERTY_NAME));
+                    VOIVODESHIPS = new HashMap<>();
 
-        driver.close();
-        driver.quit();
+                for (String key : properties.stringPropertyNames()) {
+                    VOIVODESHIPS.put(key, (Voivodeship) properties.get(key));
+                }
+            } else {
+
+                System.setProperty("webdriver.chrome.driver", ApplicationConstants.CHROME_DRIVER_LOCATION);
+                WebDriver driver = new ChromeDriver();
+                driver.get(REGON_BROWSER_PAGE_ADDRESS);
+
+                clickAddressButton(driver);
+
+                List<String> voivodeshipNames = getDropdownItems(driver, VOIVODESHIP_DROPDOWN_ID);
+                VOIVODESHIPS = getVoivodeships(driver, voivodeshipNames);
+
+                properties.putAll(VOIVODESHIPS);
+                properties.store(new FileOutputStream(ApplicationConstants.LOCATION_PROPERTY_NAME), null);
+
+                driver.close();
+                driver.quit();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private static Map<String, Voivodeship> getVoivodeships(WebDriver driver, List<String> voivodeshipNames) {

@@ -7,6 +7,8 @@ public class ApplicationConstants {
 
     public static final String CHROME_DRIVER_LOCATION = getChromedriver();
 
+    public static final String LOCATION_PROPERTY_NAME = "voivodeships.data";
+
     private static String getChromedriver() {
         return ApplicationConstants.class.getClassLoader()
                 .getResource("chromedriver").getFile();
