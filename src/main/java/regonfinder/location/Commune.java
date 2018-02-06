@@ -2,10 +2,11 @@ package regonfinder.location;
 
 import lombok.NonNull;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
-public class Commune {
+public class Commune implements Serializable {
 
     private String name;
     private List<Place> places;

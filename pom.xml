@@ -116,7 +116,7 @@
 					<generatePackage>bir1.wsdl</generatePackage>
 					<schemas>
 						<schema>
-							<url>https://wyszukiwarkaregontest.stat.gov.pl/wsBIR/wsdl/UslugaBIRzewnPubl.xsd</url>
+							<url>https://wyszukiwarkaregontest.stat.gov.pl/wsBIR/wsdl/UslugaBIRzewnPubl.xsd?WSDL</url>
 						</schema>
 					</schemas>
 				</configuration>

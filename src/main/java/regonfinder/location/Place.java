@@ -1,6 +1,8 @@
 package regonfinder.location;
 
-public class Place {
+import java.io.Serializable;
+
+public class Place implements Serializable {
 
     private String name;
 

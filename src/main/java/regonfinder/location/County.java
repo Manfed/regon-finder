@@ -2,10 +2,11 @@ package regonfinder.location;
 
 import lombok.NonNull;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 
-public class County {
+public class County implements Serializable {
 
     private String name;
     private List<Commune> communes;
