@@ -3,10 +3,10 @@ package regonfinder.application.configuration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import regonfinder.application.bir.client.QuoteClient;
+import regonfinder.application.bir.client.FullReportClient;
 
 @Configuration
-public class QuoteConfiguration {
+public class Bir1Configuration {
 
     @Bean
     public Jaxb2Marshaller marshaller() {
@@ -16,8 +16,8 @@ public class QuoteConfiguration {
     }
 
     @Bean
-    public QuoteClient quoteClient(Jaxb2Marshaller marshaller) {
-        QuoteClient client = new QuoteClient();
+    public FullReportClient quoteClient(Jaxb2Marshaller marshaller) {
+        FullReportClient client = new FullReportClient();
         client.setDefaultUri("http://www.webservicex.com/stockquote.asmx"); //TODO
         client.setMarshaller(marshaller);
         client.setUnmarshaller(marshaller);
