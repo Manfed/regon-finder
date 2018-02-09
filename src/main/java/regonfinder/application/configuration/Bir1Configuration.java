@@ -11,7 +11,9 @@ public class Bir1Configuration {
     @Bean
     public Jaxb2Marshaller marshaller() {
         Jaxb2Marshaller marshaller = new Jaxb2Marshaller();
-        marshaller.setContextPath("bir1.wsdl");
+        marshaller.setContextPaths("cis.bir._2014._07",
+                "cis.bir.publ._2014._07",
+                "cis.bir.publ._2014._07.datacontract");
         return marshaller;
     }
 

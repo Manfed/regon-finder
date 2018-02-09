@@ -16,10 +16,13 @@ import regonfinder.location.Voivodeship;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -28,47 +31,40 @@ import static regonfinder.application.constants.ApplicationConstants.REGON_BROWS
 
 public class RegonOptionsFactory {
 
-    private final static String ADDRESS_BUTTON_ID = "btnMenuSzukajPoAdresie";
-    private final static String VOIVODESHIP_DROPDOWN_ID = "selWojewodztwo";
-    private final static String COUNTY_DROPDOWN_ID = "selPowiat";
-    private final static String COMMUNE_DROPDOWN_ID = "selGmina";
-    private final static String PLACE_DROPDOWN_ID = "selMiejscowosc";
-
     private final static String DROPDOWN_OPTION_VALUE_ARGUMENT_NAME = "value";
 
     public static Map<String, Voivodeship> VOIVODESHIPS;
 
     public static void getVoivodeshipsData() {
-        Properties properties = new Properties();
+        final Path path = Paths.get(ApplicationConstants.BACKUP_FILE_NAME);
 
-        try {
-            if (properties.getProperty(ApplicationConstants.LOCATION_PROPERTY_NAME) != null) {
+        if (Files.exists(path)) {
+            try (FileInputStream fileInputStream = new FileInputStream(path.toString());
+                 ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream)) {
 
-                    properties.load(new FileInputStream(ApplicationConstants.LOCATION_PROPERTY_NAME));
-                    VOIVODESHIPS = new HashMap<>();
-
-                for (String key : properties.stringPropertyNames()) {
-                    VOIVODESHIPS.put(key, (Voivodeship) properties.get(key));
-                }
-            } else {
-
+                VOIVODESHIPS = (Map<String, Voivodeship>) objectInputStream.readObject();
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try (FileOutputStream fileOutputStream = new FileOutputStream(path.toString());
+                 ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream)) {
                 System.setProperty("webdriver.chrome.driver", ApplicationConstants.CHROME_DRIVER_LOCATION);
                 WebDriver driver = new ChromeDriver();
                 driver.get(REGON_BROWSER_PAGE_ADDRESS);
 
                 clickAddressButton(driver);
 
-                List<String> voivodeshipNames = getDropdownItems(driver, VOIVODESHIP_DROPDOWN_ID);
+                List<String> voivodeshipNames = getDropdownItems(driver, ApplicationConstants.VOIVODESHIP_DROPDOWN_ID);
                 VOIVODESHIPS = getVoivodeships(driver, voivodeshipNames);
 
-                properties.putAll(VOIVODESHIPS);
-                properties.store(new FileOutputStream(ApplicationConstants.LOCATION_PROPERTY_NAME), null);
+                objectOutputStream.writeObject(VOIVODESHIPS);
 
                 driver.close();
                 driver.quit();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -81,24 +77,24 @@ public class RegonOptionsFactory {
     }
 
     private static Voivodeship fetchVoivodeship(WebDriver driver, String voivodeshipName) {
-        selectOption(driver, VOIVODESHIP_DROPDOWN_ID, voivodeshipName, COUNTY_DROPDOWN_ID);
-        List<County> communes = getDropdownItems(driver, COUNTY_DROPDOWN_ID).stream()
+        selectOption(driver, ApplicationConstants.VOIVODESHIP_DROPDOWN_ID, voivodeshipName, ApplicationConstants.COUNTY_DROPDOWN_ID);
+        List<County> communes = getDropdownItems(driver, ApplicationConstants.COUNTY_DROPDOWN_ID).stream()
                 .map(countyName -> fetchCounty(driver, countyName))
                 .collect(Collectors.toList());
         return new Voivodeship(voivodeshipName, communes);
     }
 
     private static County fetchCounty(WebDriver driver, String countyName) {
-        selectOption(driver, COUNTY_DROPDOWN_ID, countyName, COMMUNE_DROPDOWN_ID);
-        List<Commune> communes = getDropdownItems(driver, COMMUNE_DROPDOWN_ID).stream()
+        selectOption(driver, ApplicationConstants.COUNTY_DROPDOWN_ID, countyName, ApplicationConstants.COMMUNE_DROPDOWN_ID);
+        List<Commune> communes = getDropdownItems(driver, ApplicationConstants.COMMUNE_DROPDOWN_ID).stream()
                 .map(communeName -> fetchCommune(driver, communeName))
                 .collect(Collectors.toList());
         return new County(countyName, communes);
     }
 
     private static Commune fetchCommune(WebDriver driver, String communeName) {
-        selectOption(driver, COMMUNE_DROPDOWN_ID, communeName, PLACE_DROPDOWN_ID);
-        List<Place> placeNames = getDropdownItems(driver, PLACE_DROPDOWN_ID).stream()
+        selectOption(driver, ApplicationConstants.COMMUNE_DROPDOWN_ID, communeName, ApplicationConstants.PLACE_DROPDOWN_ID);
+        List<Place> placeNames = getDropdownItems(driver, ApplicationConstants.PLACE_DROPDOWN_ID).stream()
                 .map(Place::new)
                 .collect(Collectors.toList());
         return new Commune(communeName, placeNames);
@@ -126,8 +122,8 @@ public class RegonOptionsFactory {
 
     private static void clickAddressButton(WebDriver driver) {
         WebDriverWait wait = new WebDriverWait(driver, 5);
-        final WebElement addressButton = driver.findElement(id(ADDRESS_BUTTON_ID));
+        final WebElement addressButton = driver.findElement(id(ApplicationConstants.ADDRESS_BUTTON_ID));
         addressButton.click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(id(VOIVODESHIP_DROPDOWN_ID)));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(id(ApplicationConstants.VOIVODESHIP_DROPDOWN_ID)));
     }
 }

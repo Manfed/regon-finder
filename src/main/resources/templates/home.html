@@ -1,18 +1,136 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<head>
+    <link rel="stylesheet" type="text/css" href="/home.css" />
+    <script src="webjars/jquery/2.2.4/jquery.min.js"></script>
+</head>
+<script>
+/*<![CDATA[*/
+        $(document).ready(
+        function() {
+
+            $('#voivodeships').change(
+            function() {
+
+                $('#communes')
+                    .find('option')
+                    .remove();
+
+                $('#places')
+                    .find('option')
+                    .remove();
+
+                $.getJSON('county', {
+                    voivodeshipName : $(this).val(),
+                    ajax : 'true'
+                }, function(data) {
+
+                    var html = '<option value=""></option>';
+                    var len = data.length;
+
+                    for ( var i = 0; i < len; i++) {
+                        html += '<option value="' + data[i].name + '">' + data[i].name + '</option>';
+                    }
+                    html += '</option>';
+
+                    $('#counties').html(html);
+                });
+
+                $('#counties').change(
+                function() {
+
+                    $('#places')
+                        .find('option')
+                        .remove();
+
+                    $.getJSON('commune', {
+                        voivodeshipName : $('#voivodeships').val(),
+                        countyName : $(this).val(),
+                        ajax : 'true'
+                    }, function(data) {
+
+                        var html = '<option value=""></option>';
+                        var len = data.length;
+
+                        for ( var i = 0; i < len; i++) {
+                            html += '<option value="' + data[i].name + '">' + data[i].name + '</option>';
+                        }
+                        html += '</option>';
+
+                        $('#communes').html(html);
+                    });
+                });
+
+                $('#communes').change(
+                function() {
+
+                    $.getJSON('place', {
+                        voivodeshipName : $('#voivodeships').val(),
+                        countyName : $('#counties').val(),
+                        communeName : $(this).val(),
+                        ajax : 'true'
+                    }, function(data) {
+
+                        var html = '<option value=""></option>';
+                        var len = data.length;
+
+                        for ( var i = 0; i < len; i++) {
+                            html += '<option value="' + data[i].name + '">' + data[i].name + '</option>';
+                        }
+                        html += '</option>';
+
+                        $('#places').html(html);
+                    });
+                });
+            });
+
+        });
+/*]]>*/
+    </script>
 <body>
 
-	<div th:if="${message}">
-		<h2 th:inline="text">Hello [[${#httpServletRequest.remoteUser}]]!</h2>
-	</div>
-
-	<div>
-		<form method="POST" enctype="multipart/form-data" action="/file">
-			<table>
-				<tr><td>File to upload:</td><td><input type="file" name="file" accept="text/csv" /></td></tr>
-				<tr><td></td><td><input type="submit" value="Upload" /></td></tr>
-			</table>
-		</form>
+	<div class="row">
+        <div class="column">
+            <h2>Upload the CSV file</h2>
+            <form method="POST" enctype="multipart/form-data" action="/file">
+                <table>
+                    <tr><td>File to upload:</td><td><input type="file" name="file" accept="text/csv" /></td></tr>
+                    <tr><td></td><td><input type="submit" value="Upload" /></td></tr>
+                </table>
+            </form>
+        </div>
+        <div class="column">
+            <h2>Choose the place</h2>
+            <form method="POST" action="#" th:action="@{/address}" th:object="${location}">
+                <p>
+                    <label class="custom-select">Województwo (Voivodeship):
+                        <select id="voivodeships" th:field="*{voivodeshipName}" required="required">
+                            <option value="Select voivodeship"></option>
+                            <option th:each="voivodeship : ${voivodeships}" th:value="${voivodeship}" th:text="${voivodeship}"></option>
+                        </select>
+                    </label>
+                </p>
+                <p>
+                    <label class="custom-select">Powiat (County):
+                        <select id="counties" th:field="*{countyName}" required="required">
+                        </select>
+                    </label>
+                </p>
+                <p>
+                    <label class="custom-select">Gmina (Commune):
+                        <select id="communes" th:field="*{communeName}" required="required">
+                        </select>
+                    </label>
+                </p>
+                <p>
+                    <label class="custom-select">Miejscowość (Place):
+                        <select id="places" th:field="*{placeName}" required="required">
+                        </select>
+                    </label>
+                </p>
+                <button type="submit">Search</button>
+            </form>
+        </div>
 	</div>
 
 </body>
