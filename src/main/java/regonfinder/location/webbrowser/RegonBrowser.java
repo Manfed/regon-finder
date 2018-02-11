@@ -13,8 +13,6 @@ import regonfinder.location.Location;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.openqa.selenium.By.id;
 import static org.openqa.selenium.By.tagName;
@@ -45,15 +43,22 @@ public class RegonBrowser {
         wait.until(ExpectedConditions.visibilityOfElementLocated(id(ApplicationConstants.RESULTS_TABLE_DIV)));
 
         final WebElement countSpan = driver.findElement(id(ApplicationConstants.RECORD_COUND_SPAN_ID));
-        final int recordsCount = Integer.parseInt(countSpan.getText());
 
         List<WebElement> resultRows = getTableRows(driver);
+
+        final int recordsCount = !countSpan.getText().equals("") ?
+                Integer.parseInt(countSpan.getText()) :
+                resultRows.size();
 
         while (regons.size() < recordsCount) {
 
             for (WebElement row : resultRows) {
                 regons.add(fetchRegonFromResultTableRow(row));
             }
+            if (regons.size() == recordsCount) {
+                break;
+            }
+
             goToNextPage(driver);
             resultRows = getTableRows(driver);
         }
@@ -98,18 +103,10 @@ public class RegonBrowser {
     private RegonType fetchRegonFromResultTableRow(WebElement row) {
         final List<WebElement> tableCell = row.findElements(tagName("td"));
 
-        WebElement regonElement = tableCell.get(0);
-
         String regon = tableCell.get(0).getText();
         String type = tableCell.get(1).getText();
 
-        final WebElement anchor = regonElement.findElement(xpath(".//a"));
-
-        Pattern pattern = Pattern.compile(".*\",\"(\\w+).*");
-        Matcher matcher = pattern.matcher(anchor.getAttribute("href"));
-        String reportName = matcher.find() ? matcher.group(1) : null;
-
-        return new RegonType(regon, type, reportName);
+        return new RegonType(regon, type);
     }
 
     private void goToNextPage(WebDriver driver) {

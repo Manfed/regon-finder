@@ -98,8 +98,14 @@
             <artifactId>cxf-spring-boot-starter-jaxws</artifactId>
             <version>3.2.1</version>
         </dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-ws-security</artifactId>
+			<version>3.2.1</version>
+		</dependency>
 
-        <!--JQuery-->
+
+		<!--JQuery-->
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>jquery</artifactId>

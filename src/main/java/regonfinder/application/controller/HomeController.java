@@ -1,5 +1,8 @@
 package regonfinder.application.controller;
 
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,6 +10,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import regonfinder.application.bir.client.ReportClient;
+import regonfinder.application.bir.client.ReportParser;
+import regonfinder.application.csv.CsvWriter;
 import regonfinder.location.Commune;
 import regonfinder.location.County;
 import regonfinder.location.Location;
@@ -14,8 +20,15 @@ import regonfinder.location.Place;
 import regonfinder.location.webbrowser.RegonBrowser;
 import regonfinder.location.webbrowser.RegonOptionsFactory;
 import regonfinder.location.webbrowser.RegonType;
+import regonfinder.location.webbrowser.Reports;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Controller
 public class HomeController {
@@ -54,11 +67,38 @@ public class HomeController {
                         .findFirst().orElse(null).getPlaces();
     }
 
-    @PostMapping("/address")
-    public @ResponseBody String getRegons(@ModelAttribute("location") Location location,
-                                          Model model) {
+    @PostMapping(value = "/address", produces = "text/csv")
+    public @ResponseBody
+    ResponseEntity<InputStreamResource> getRegons(@ModelAttribute("location") Location location,
+                                                  Model model) throws IOException {
         RegonBrowser regonBrowser = new RegonBrowser();
+        ReportClient reportClient = new ReportClient();
+        ReportParser reportParser = new ReportParser();
+        Writer writer = new StringWriter();
+        CsvWriter csvWriter = new CsvWriter();
+
+        final Set<String> csvHeader = csvWriter.writeHeader(writer);
         final List<RegonType> regons = regonBrowser.getRegons(location);
-        return "home";
+
+        for (RegonType regon : regons) {
+            try {
+                final Reports report = reportClient.getReport(regon);
+                Map<String, String> parsedReport = reportParser.parseReport(report);
+                csvWriter.appendMapToFile(writer, csvHeader, parsedReport);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+
+        reportClient.logout();
+        final byte[] csvBytes = writer.toString().getBytes();
+        final ByteArrayInputStream inputStream = new ByteArrayInputStream(csvBytes);
+        return ResponseEntity
+                .ok()
+                .contentLength(csvBytes.length)
+                .contentType(
+                        MediaType.parseMediaType("application/octet-stream"))
+                .body(new InputStreamResource(inputStream));
     }
 }

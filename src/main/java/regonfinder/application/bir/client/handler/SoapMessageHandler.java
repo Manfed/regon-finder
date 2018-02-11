@@ -24,6 +24,10 @@ public class SoapMessageHandler implements SOAPHandler<SOAPMessageContext> {
         return sessionCookie;
     }
 
+    public SoapMessageHandler() {
+        this.sessionCookie = "";
+    }
+
     @Override
     public boolean handleMessage(SOAPMessageContext context) {
         if ((boolean) context.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY)) {
@@ -32,11 +36,7 @@ public class SoapMessageHandler implements SOAPHandler<SOAPMessageContext> {
                 headers = new HashMap<>();
                 context.put(MessageContext.HTTP_REQUEST_HEADERS, headers);
             }
-            List<String> cookies = headers.get(SID);
-            if (cookies == null) {
-                cookies = new ArrayList<>();
-                headers.put(SID, cookies);
-            }
+            List<String> cookies = headers.computeIfAbsent(SID, k -> new ArrayList<>());
             cookies.add(this.sessionCookie);
         }
         return true;

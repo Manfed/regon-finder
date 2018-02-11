@@ -1,38 +1,37 @@
 package regonfinder.location.webbrowser;
 
+import com.google.common.collect.ImmutableMap;
+
+import java.util.Map;
+
 public class RegonType {
+
+    private final Map<String, ReportNames> REPORTS_DEPENDENCE = ImmutableMap.of(
+            "F", new ReportNames("PublDaneRaportFizycznaOsoba", "PublDaneRaportDzialalnosciFizycznej"),
+            "LF", new ReportNames("PublDaneRaportLokalnaFizycznej", "PublDaneRaportDzialalnosciLokalnejFizycznej"),
+            "P", new ReportNames("PublDaneRaportPrawna", "PublDaneRaportDzialalnosciPrawnej"),
+            "LP", new ReportNames("PublDaneRaportLokalnaPrawnej", "PublDaneRaportDzialalnosciLokalnejPrawnej")
+    );
 
     private String regon;
     private String reportType;
-    private String reportName;
+    private ReportNames reportName;
 
-    public RegonType(String regon, String reportType, String reportName) {
+    public RegonType(String regon, String reportType) {
         this.regon = regon;
         this.reportType = reportType;
-        this.reportName = reportName;
+        this.reportName = REPORTS_DEPENDENCE.get(reportType);
     }
 
     public String getRegon() {
         return regon;
     }
 
-    public void setRegon(String regon) {
-        this.regon = regon;
-    }
-
     public String getReportType() {
         return reportType;
     }
 
-    public void setReportType(String reportType) {
-        this.reportType = reportType;
-    }
-
-    public String getReportName() {
+    public ReportNames getReportName() {
         return reportName;
-    }
-
-    public void setReportName(String reportName) {
-        this.reportName = reportName;
     }
 }
