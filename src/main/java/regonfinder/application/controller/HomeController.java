@@ -69,8 +69,7 @@ public class HomeController {
 
     @PostMapping(value = "/address", produces = "text/csv")
     public @ResponseBody
-    ResponseEntity<InputStreamResource> getRegons(@ModelAttribute("location") Location location,
-                                                  Model model) throws IOException {
+    ResponseEntity<InputStreamResource> getRegons(@ModelAttribute("location") Location location) throws IOException {
         RegonBrowser regonBrowser = new RegonBrowser();
         ReportClient reportClient = new ReportClient();
         ReportParser reportParser = new ReportParser();
@@ -85,20 +84,21 @@ public class HomeController {
                 final Reports report = reportClient.getReport(regon);
                 Map<String, String> parsedReport = reportParser.parseReport(report);
                 csvWriter.appendMapToFile(writer, csvHeader, parsedReport);
-
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
 
         reportClient.logout();
+
         final byte[] csvBytes = writer.toString().getBytes();
         final ByteArrayInputStream inputStream = new ByteArrayInputStream(csvBytes);
         return ResponseEntity
                 .ok()
                 .contentLength(csvBytes.length)
                 .contentType(
-                        MediaType.parseMediaType("application/octet-stream"))
+                        MediaType.parseMediaType(MediaType.APPLICATION_OCTET_STREAM_VALUE))
+                .header("Content-Disposition", "attachment; filename=" + location.getPlaceName() + ".csv")
                 .body(new InputStreamResource(inputStream));
     }
 }

@@ -1,6 +1,8 @@
 package regonfinder.application.bir.client;
 
 import cis.bir.publ._2014._07.IUslugaBIRzewnPubl;
+import cis.bir.publ._2014._07.datacontract.ObjectFactory;
+import cis.bir.publ._2014._07.datacontract.ParametryWyszukiwania;
 import regonfinder.location.webbrowser.RegonType;
 import regonfinder.location.webbrowser.Reports;
 
@@ -8,7 +10,7 @@ import java.net.MalformedURLException;
 
 public class ReportClient {
 
-    private static final long DELAY_BETWEEN_REQUESTS_IN_MS = 660;
+    private static final long DELAY_BETWEEN_REQUESTS_IN_MS = 700;
 
     private static long lastRequestTime;
     private SoapApiClient soapApiClient;
@@ -31,11 +33,17 @@ public class ReportClient {
 
         try {
             final IUslugaBIRzewnPubl port = soapApiClient.prepareApi();
+
+            ObjectFactory objectFactory = new ObjectFactory();
+            ParametryWyszukiwania searchParams = objectFactory.createParametryWyszukiwania();
+            searchParams.setRegon(objectFactory.createParametryWyszukiwaniaRegon(regonType.getRegon()));
+
             String generalReport = port.danePobierzPelnyRaport(regonType.getRegon(),
                     regonType.getReportName().getGeneralReportName());
             String pkdReport = port.danePobierzPelnyRaport(regonType.getRegon(),
                     regonType.getReportName().getPkdReportName());
-            reports = new Reports(generalReport, pkdReport);
+            String basicData = port.daneSzukaj(searchParams);
+            reports = new Reports(generalReport, pkdReport, basicData);
         } catch (Exception e) {
             e.printStackTrace();
         }

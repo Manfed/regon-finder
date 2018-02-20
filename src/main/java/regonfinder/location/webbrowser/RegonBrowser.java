@@ -63,7 +63,6 @@ public class RegonBrowser {
             resultRows = getTableRows(driver);
         }
 
-        driver.close();
         driver.quit();
 
         return regons;

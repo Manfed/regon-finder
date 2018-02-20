@@ -20,8 +20,7 @@ public class CsvWriter {
      */
     public Set<String> writeHeader(Writer writer) throws IOException {
         Set<String> header = ImmutableSet.<String>builder()
-                .addAll(ApplicationConstants.REPORT_FIELDS)
-                .addAll(ApplicationConstants.PKD_REPORT_FIELDS)
+                .addAll(ApplicationConstants.CUSTOM_HEADER)
                 .build();
 
         final String line = header.stream()
@@ -32,7 +31,8 @@ public class CsvWriter {
 
     public void appendMapToFile(Writer writer, final Set<String> headers, final Map<String, String> singleReport) throws IOException {
         final String line = headers.stream()
-                .map(header -> singleReport.getOrDefault(header, ""))
+                .map(header -> singleReport.getOrDefault(header, "").replaceAll("\"", "")
+                        .replaceAll(",", " "))
                 .reduce("", reduceLine());
 
         writer.write(line + NEW_LINE);

@@ -3,7 +3,7 @@ package regonfinder.application.configuration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
-import regonfinder.application.bir.client.FullReportClient;
+import regonfinder.application.bir.client.SoapApiClient;
 
 @Configuration
 public class Bir1Configuration {
@@ -18,8 +18,8 @@ public class Bir1Configuration {
     }
 
     @Bean
-    public FullReportClient quoteClient(Jaxb2Marshaller marshaller) {
-        FullReportClient client = new FullReportClient();
+    public SoapApiClient quoteClient(Jaxb2Marshaller marshaller) {
+        SoapApiClient client = new SoapApiClient();
         client.setDefaultUri("http://www.webservicex.com/stockquote.asmx"); //TODO
         client.setMarshaller(marshaller);
         client.setUnmarshaller(marshaller);

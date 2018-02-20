@@ -1,20 +1,17 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>REGON finder</title>
-    <sec:csrfMetaTags/>
-    <link rel="stylesheet" type="text/css" href="/login.css" />
+    <link rel="stylesheet" type="text/css" href="/login_style.css" />
 </head>
 <body>
 <form th:action="@{/login}" method="post">
-    <sec:csrfInput />
     <div class="container">
         <label for="username"><b>User Name</b></label>
-        <input type="text" name="username" placeholder="Enter Username" required="required" />
+        <input type="text" name="username" placeholder="Enter Username" required="required" id="username" />
 
         <label for="password"><b>Password</b></label>
-        <input type="password" name="password" placeholder="Enter Password" required="required" />
+        <input type="password" name="password" placeholder="Enter Password" required="required" id="password" />
 
         <button type="submit">Login</button>
     </div>

@@ -41,8 +41,6 @@ public class SoapApiClient extends WebServiceGatewaySupport {
         return port;
     }
 
-
-
     public void logout() throws MalformedURLException {
         final IUslugaBIRzewnPubl port = preparePort();
         port.wyloguj(soapMessageHandler.getSessionCookie());

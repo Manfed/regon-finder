@@ -13,7 +13,7 @@ public class HomeControllerTest {
         HomeController homeController = new HomeController();
         Location location = new Location("POMORSKIE", "kartuski", "Kartuzy obszar wiejski", "Dzierżążno");
 
-        final ResponseEntity<InputStreamResource> regons = homeController.getRegons(location, null);
+        final ResponseEntity<InputStreamResource> regons = homeController.getRegons(location);
 
         assertNotNull(regons);
 

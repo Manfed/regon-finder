@@ -1,7 +1,6 @@
 package regonfinder.application.bir.client;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -21,10 +20,15 @@ public class ReportParser {
         Map<String, String> result = new HashMap<>();
 
         Document generalReport = loadXMLFromString(report.getGeneralReport());
-        Document pkdReport = loadXMLFromString(report.getPkdReport());
-
         result.putAll(parseGeneralReport(generalReport));
-        result.putAll(parsePKDReport(pkdReport));
+
+        Document basicData = loadXMLFromString(report.getBasicData());
+        result.putAll(parseBasicData(basicData));
+
+        if (!report.getPkdReport().equals("")) {
+            Document pkdReport = loadXMLFromString(report.getPkdReport());
+            result.putAll(parsePKDReport(pkdReport));
+        }
 
         return result;
     }
@@ -32,6 +36,7 @@ public class ReportParser {
     private Document loadXMLFromString(String xml) throws Exception
     {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setIgnoringElementContentWhitespace(true);
         DocumentBuilder builder = factory.newDocumentBuilder();
         InputSource is = new InputSource(new StringReader(xml));
         return builder.parse(is);
@@ -40,12 +45,32 @@ public class ReportParser {
     private Map<String, String> parseGeneralReport(Document report) {
         Map<String, String> result = new HashMap<>();
 
-        final Element data = report.getElementById(DATA_MARKUP_NAME);
-        final NodeList dataNodes = data.getChildNodes();
+        final NodeList dataNodes = report.getElementsByTagName(DATA_MARKUP_NAME);
 
         for (int i = 0; i < dataNodes.getLength(); i++) {
-            final Node item = dataNodes.item(i);
-            result.put(item.getNodeName(), item.getTextContent());
+            Node item = dataNodes.item(i).getChildNodes().item(0);
+            while (item != null) {
+                String itemName = item.getNodeName();
+
+                result.put(itemName.substring(itemName.indexOf("_") + 1), item.getTextContent());
+                item = item.getNextSibling();
+            }
+        }
+
+        return result;
+    }
+
+    private Map<String, String> parseBasicData(Document report) {
+        Map<String, String> result = new HashMap<>();
+
+        final NodeList dataNodes = report.getElementsByTagName(DATA_MARKUP_NAME);
+
+        for (int i = 0; i < dataNodes.getLength(); i++) {
+            Node item = dataNodes.item(i).getChildNodes().item(0);
+            while (item != null) {
+                result.put(item.getNodeName(), item.getTextContent());
+                item = item.getNextSibling();
+            }
         }
 
         return result;
@@ -57,9 +82,15 @@ public class ReportParser {
         final NodeList dataNodes = report.getElementsByTagName(DATA_MARKUP_NAME);
 
         for (int i = 0; i < dataNodes.getLength(); i++) {
-            final Node item = dataNodes.item(i);
-            result.merge(item.getNodeName(), item.getTextContent(),
-                    (oldValue, newValue) -> oldValue + " " + newValue);
+            Node item = dataNodes.item(i).getChildNodes().item(0);
+            while (item != null) {
+                String itemName = item.getNodeName();
+
+                result.merge(itemName.substring(itemName.indexOf("_") + 1), item.getTextContent(),
+                        (oldValue, newValue) -> oldValue + " " + newValue);
+
+                item = item.getNextSibling();
+            }
         }
 
         return result;
