@@ -11,6 +11,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiFunction;
 
 public class ReportParser {
 
@@ -24,6 +25,11 @@ public class ReportParser {
 
         Document basicData = loadXMLFromString(report.getBasicData());
         result.putAll(parseBasicData(basicData));
+
+        if (report.hasAdditionalData()) {
+            Document additionalData = loadXMLFromString(report.getAdditionalReport());
+            result.putAll(parseGeneralReport(additionalData));
+        }
 
         if (!report.getPkdReport().equals("")) {
             Document pkdReport = loadXMLFromString(report.getPkdReport());
@@ -52,7 +58,7 @@ public class ReportParser {
             while (item != null) {
                 String itemName = item.getNodeName();
 
-                result.put(itemName.substring(itemName.indexOf("_") + 1), item.getTextContent());
+                result.merge(getFieldName(itemName), item.getTextContent(), mergeValues());
                 item = item.getNextSibling();
             }
         }
@@ -68,7 +74,7 @@ public class ReportParser {
         for (int i = 0; i < dataNodes.getLength(); i++) {
             Node item = dataNodes.item(i).getChildNodes().item(0);
             while (item != null) {
-                result.put(item.getNodeName(), item.getTextContent());
+                result.merge(item.getNodeName(), item.getTextContent(), mergeValues());
                 item = item.getNextSibling();
             }
         }
@@ -86,13 +92,20 @@ public class ReportParser {
             while (item != null) {
                 String itemName = item.getNodeName();
 
-                result.merge(itemName.substring(itemName.indexOf("_") + 1), item.getTextContent(),
-                        (oldValue, newValue) -> oldValue + " " + newValue);
+                result.merge(getFieldName(itemName), item.getTextContent(), mergeValues());
 
                 item = item.getNextSibling();
             }
         }
 
         return result;
+    }
+
+    private String getFieldName(String originalName) {
+        return originalName.substring(originalName.indexOf("_") + 1);
+    }
+
+    private BiFunction<? super String, ? super String, ? extends String> mergeValues() {
+        return (oldValue, newValue) -> oldValue.contains(newValue) ? oldValue : oldValue + " " + newValue;
     }
 }

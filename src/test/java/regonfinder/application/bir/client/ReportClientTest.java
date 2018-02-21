@@ -18,7 +18,7 @@ public class ReportClientTest {
 
     @Test
     public void getReportTest() throws Exception {
-        RegonType regonType = new RegonType("080207121", "P");
+        RegonType regonType = new RegonType("771413050", "F");
         final Reports report = reportClient.getReport(regonType);
 
         assertNotNull(report);

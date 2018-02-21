@@ -6,13 +6,13 @@ import cis.bir.publ._2014._07.datacontract.ParametryWyszukiwania;
 import regonfinder.location.webbrowser.RegonType;
 import regonfinder.location.webbrowser.Reports;
 
+import javax.annotation.Nullable;
 import java.net.MalformedURLException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ReportClient {
 
-    private static final long DELAY_BETWEEN_REQUESTS_IN_MS = 700;
-
-    private static long lastRequestTime;
     private SoapApiClient soapApiClient;
 
     public ReportClient() {
@@ -20,16 +20,7 @@ public class ReportClient {
     }
 
     public synchronized Reports getReport(RegonType regonType) {
-        final long lastRequestDiff = System.currentTimeMillis() - lastRequestTime;
         Reports reports = null;
-
-        if (lastRequestDiff < DELAY_BETWEEN_REQUESTS_IN_MS) {
-            try {
-                Thread.sleep(DELAY_BETWEEN_REQUESTS_IN_MS - lastRequestDiff);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
 
         try {
             final IUslugaBIRzewnPubl port = soapApiClient.prepareApi();
@@ -43,11 +34,15 @@ public class ReportClient {
             String pkdReport = port.danePobierzPelnyRaport(regonType.getRegon(),
                     regonType.getReportName().getPkdReportName());
             String basicData = port.daneSzukaj(searchParams);
-            reports = new Reports(generalReport, pkdReport, basicData);
+
+            final String silosId = getSilosId(basicData);
+            String additionalReport = (silosId != null && regonType.getReportType().equals("F")) ?
+                    port.danePobierzPelnyRaport(regonType.getRegon(), getReportNameForGivenSilosId(silosId)) : null;
+
+            reports = new Reports(generalReport, pkdReport, basicData, additionalReport);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        lastRequestTime = System.currentTimeMillis();
         return reports;
     }
 
@@ -56,6 +51,31 @@ public class ReportClient {
             soapApiClient.logout();
         } catch (MalformedURLException e) {
             e.printStackTrace();
+        }
+    }
+
+    @Nullable
+    private String getSilosId(final String basicDataReport) {
+        Pattern pattern = Pattern.compile("<SilosID>(.*)</SilosID>");
+        Matcher matcher = pattern.matcher(basicDataReport);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null;
+    }
+
+    private String getReportNameForGivenSilosId(final String silosId) {
+        switch (silosId) {
+            case "1":
+                return "PublDaneRaportDzialalnoscFizycznejCeidg";
+            case "2":
+                return "PublDaneRaportDzialalnoscFizycznejRolnicza";
+            case "3":
+                return "PublDaneRaportDzialalnoscFizycznejPozostala";
+            case "4":
+                return "PublDaneRaportDzialalnoscFizycznejWKrupgn";
+            default:
+                return "PublDaneRaportLokalneFizycznej";
         }
     }
 }

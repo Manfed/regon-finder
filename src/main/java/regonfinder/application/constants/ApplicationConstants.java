@@ -27,7 +27,7 @@ public class ApplicationConstants {
     public final static String PROGRESS_ICON_ID = "divProgressIcon";
 
     //Address and Key to the test environment
-    public static final String BIR1_ADDRESS = "https://wyszukiwarkaregon.stat.gov.pl/wsBIR/UslugaBIRzewnPubl.svc";
+    public static final String BIR1_ADDRESS = "https://wyszukiwarkaregontest.stat.gov.pl/wsBIR/UslugaBIRzewnPubl.svc";
     public static final String BIR1_WSDL_ADDRESS = "https://wyszukiwarkaregontest.stat.gov.pl/wsBIR/wsdl/UslugaBIRzewnPubl.xsd";
     public static final String BIR1_USER_KEY = "abcde12345abcde12345";
 

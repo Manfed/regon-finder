@@ -1,8 +1,8 @@
 package regonfinder.application.controller;
 
 import org.junit.Test;
-import org.springframework.core.io.InputStreamResource;
-import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletResponse;
+import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import regonfinder.location.Location;
 
 import static org.junit.Assert.assertNotNull;
@@ -13,7 +13,7 @@ public class HomeControllerTest {
         HomeController homeController = new HomeController();
         Location location = new Location("POMORSKIE", "kartuski", "Kartuzy obszar wiejski", "Dzierżążno");
 
-        final ResponseEntity<InputStreamResource> regons = homeController.getRegons(location);
+        final StreamingResponseBody regons = homeController.getRegons(location, new MockHttpServletResponse());
 
         assertNotNull(regons);
 

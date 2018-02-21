@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableSet;
 import regonfinder.application.constants.ApplicationConstants;
 
 import java.io.IOException;
-import java.io.Writer;
+import java.io.OutputStream;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.BinaryOperator;
@@ -15,27 +15,27 @@ public class CsvWriter {
 
     /**
      * Create CSV file header
-     * @param writer  File writer
+     * @param outputStream  File output stream
      * @return  Elements of the header
      */
-    public Set<String> writeHeader(Writer writer) throws IOException {
+    public Set<String> writeHeader(OutputStream outputStream) throws IOException {
         Set<String> header = ImmutableSet.<String>builder()
                 .addAll(ApplicationConstants.CUSTOM_HEADER)
                 .build();
 
         final String line = header.stream()
                 .reduce("", reduceLine());
-        writer.write(line + NEW_LINE);
+        outputStream.write((line + NEW_LINE).getBytes());
         return header;
     }
 
-    public void appendMapToFile(Writer writer, final Set<String> headers, final Map<String, String> singleReport) throws IOException {
+    public void appendMapToFile(OutputStream outputStream, final Set<String> headers, final Map<String, String> singleReport) throws IOException {
         final String line = headers.stream()
                 .map(header -> singleReport.getOrDefault(header, "").replaceAll("\"", "")
                         .replaceAll(",", " "))
                 .reduce("", reduceLine());
 
-        writer.write(line + NEW_LINE);
+        outputStream.write((line + NEW_LINE).getBytes());
     }
 
     private BinaryOperator<String> reduceLine() {
