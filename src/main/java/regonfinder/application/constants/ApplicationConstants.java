@@ -18,13 +18,17 @@ public class ApplicationConstants {
     public final static String COUNTY_DROPDOWN_ID = "selPowiat";
     public final static String COMMUNE_DROPDOWN_ID = "selGmina";
     public final static String PLACE_DROPDOWN_ID = "selMiejscowosc";
+    public final static String STREET_DROPDOWN_ID = "selUlica";
     public final static String SEARCH_BUTTON_ID = "btnSzukajPoAdresie";
     public final static String RESULTS_TABLE_DIV = "divListaJednostek";
+    public final static String PAGE_INDEX_ID = "spanPageIndex";
 
     public final static String RECORD_COUND_SPAN_ID = "spanRecCnt";
     public final static String NEXT_PAGE_BUTTON_ID = "btnNextPage";
     public final static String RESULT_TABLE_CLASS = "tabelaZbiorcza";
     public final static String PROGRESS_ICON_ID = "divProgressIcon";
+    public final static String ERROR_DIALOG_ID = "divInfoKomunikat";
+    public final static String NOTHING_FOUND_DIALOG_TEXT = "Nie znaleziono podmiotów.";
 
     //Address and Key to the test environment
     public static final String BIR1_ADDRESS = "https://wyszukiwarkaregontest.stat.gov.pl/wsBIR/UslugaBIRzewnPubl.svc";
