@@ -21,7 +21,7 @@
                     .remove();
 
                 $.getJSON('county', {
-                    voivodeshipName : $(this).val(),
+                    voivodeshipName : $(this).children(':selected').text(),
                     ajax : 'true'
                 }, function(data) {
 
@@ -29,7 +29,7 @@
                     var len = data.length;
 
                     for ( var i = 0; i < len; i++) {
-                        html += '<option value="' + data[i].name + '">' + data[i].name + '</option>';
+                        html += '<option value="' + data[i].id + '">' + data[i].name + '</option>';
                     }
                     html += '</option>';
 
@@ -44,8 +44,8 @@
                         .remove();
 
                     $.getJSON('commune', {
-                        voivodeshipName : $('#voivodeships').val(),
-                        countyName : $(this).val(),
+                        voivodeshipName : $('#voivodeships').children(':selected').text(),
+                        countyId : $(this).val(),
                         ajax : 'true'
                     }, function(data) {
 
@@ -53,7 +53,7 @@
                         var len = data.length;
 
                         for ( var i = 0; i < len; i++) {
-                            html += '<option value="' + data[i].name + '">' + data[i].name + '</option>';
+                            html += '<option value="' + data[i].id + '" th:field="*{placeName}">' + data[i].name + '</option>';
                         }
                         html += '</option>';
 
@@ -65,9 +65,9 @@
                 function() {
 
                     $.getJSON('place', {
-                        voivodeshipName : $('#voivodeships').val(),
-                        countyName : $('#counties').val(),
-                        communeName : $(this).val(),
+                        voivodeshipName : $('#voivodeships').children(':selected').text(),
+                        countyId : $('#counties').val(),
+                        communeId : $(this).val(),
                         ajax : 'true'
                     }, function(data) {
 
@@ -75,12 +75,17 @@
                         var len = data.length;
 
                         for ( var i = 0; i < len; i++) {
-                            html += '<option value="' + data[i].name + '">' + data[i].name + '</option>';
+                            html += '<option value="' + data[i].id + '">' + data[i].name + '</option>';
                         }
                         html += '</option>';
 
                         $('#places').html(html);
                     });
+                });
+
+                $('#places').change(
+                function() {
+                    $('#placeName').val($(this).children(':selected').text());
                 });
             });
 
@@ -91,43 +96,35 @@
 
 	<div class="row">
         <div class="column">
-            <h2>Upload the CSV file - not working (yet)</h2>
-            <form method="POST" enctype="multipart/form-data" action="/file">
-                <table>
-                    <tr><td>File to upload:</td><td><input type="file" name="file" accept="text/csv" /></td></tr>
-                    <tr><td></td><td><input type="submit" value="Upload" /></td></tr>
-                </table>
-            </form>
-        </div>
-        <div class="column">
             <h2>Choose the place</h2>
             <form method="POST" action="#" th:action="@{/address}" th:object="${location}">
                 <p>
                     <label class="custom-select">Województwo (Voivodeship):
-                        <select id="voivodeships" th:field="*{voivodeshipName}" required="required">
+                        <select id="voivodeships" th:field="*{voivodeshipId}" required="required">
                             <option value="Select voivodeship"></option>
-                            <option th:each="voivodeship : ${voivodeships}" th:value="${voivodeship}" th:text="${voivodeship}"></option>
+                            <option th:each="voivodeship : ${voivodeships}" th:value="${voivodeship.id}" th:text="${voivodeship.name}"></option>
                         </select>
                     </label>
                 </p>
                 <p>
                     <label class="custom-select">Powiat (County):
-                        <select id="counties" th:field="*{countyName}" required="required">
+                        <select id="counties" th:field="*{countyId}" required="required">
                         </select>
                     </label>
                 </p>
                 <p>
                     <label class="custom-select">Gmina (Commune):
-                        <select id="communes" th:field="*{communeName}" required="required">
+                        <select id="communes" th:field="*{communeId}" required="required">
                         </select>
                     </label>
                 </p>
                 <p>
                     <label class="custom-select">Miejscowość (Place):
-                        <select id="places" th:field="*{placeName}" required="required">
+                        <select id="places" th:field="*{placeId}" required="required">
                         </select>
                     </label>
                 </p>
+                <input type="hidden" id="placeName" th:field="*{placeName}" required="required" />
                 <button type="submit">Search</button>
             </form>
         </div>

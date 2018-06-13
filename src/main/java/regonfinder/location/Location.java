@@ -2,43 +2,53 @@ package regonfinder.location;
 
 public class Location {
 
-    private String voivodeshipName;
-    private String countyName;
-    private String communeName;
+    private String voivodeshipId;
+    private String countyId;
+    private String communeId;
+    private String placeId;
     private String placeName;
 
     public Location() {
     }
 
-    public Location(String voivodeshipName, String countyName, String communeName, String placeName) {
-        this.voivodeshipName = voivodeshipName;
-        this.countyName = countyName;
-        this.communeName = communeName;
+    public Location(String voivodeshipId, String countyId, String communeId, String placeId, String placeName) {
+        this.voivodeshipId = voivodeshipId;
+        this.countyId = countyId;
+        this.communeId = communeId;
+        this.placeId = placeId;
         this.placeName = placeName;
     }
 
-    public String getVoivodeshipName() {
-        return voivodeshipName;
+    public String getVoivodeshipId() {
+        return voivodeshipId;
     }
 
-    public void setVoivodeshipName(String voivodeshipName) {
-        this.voivodeshipName = voivodeshipName;
+    public void setVoivodeshipId(String voivodeshipId) {
+        this.voivodeshipId = voivodeshipId;
     }
 
-    public String getCountyName() {
-        return countyName;
+    public String getCountyId() {
+        return countyId;
     }
 
-    public void setCountyName(String countyName) {
-        this.countyName = countyName;
+    public void setCountyId(String countyId) {
+        this.countyId = countyId;
     }
 
-    public String getCommuneName() {
-        return communeName;
+    public String getCommuneId() {
+        return communeId;
     }
 
-    public void setCommuneName(String communeName) {
-        this.communeName = communeName;
+    public void setCommuneId(String communeId) {
+        this.communeId = communeId;
+    }
+
+    public String getPlaceId() {
+        return placeId;
+    }
+
+    public void setPlaceId(String placeId) {
+        this.placeId = placeId;
     }
 
     public String getPlaceName() {

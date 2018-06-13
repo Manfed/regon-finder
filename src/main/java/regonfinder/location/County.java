@@ -9,10 +9,12 @@ import java.util.Optional;
 public class County implements Serializable {
 
     private String name;
+    private String id;
     private List<Commune> communes;
 
-    public County(String name, List<Commune> communes) {
+    public County(String name, String id, List<Commune> communes) {
         this.name = name;
+        this.id = id;
         this.communes = communes;
     }
 
@@ -22,6 +24,10 @@ public class County implements Serializable {
 
     public List<Commune> getCommunes() {
         return communes;
+    }
+
+    public String getId() {
+        return id;
     }
 
     public Optional<Commune> getCommuneByName(@NonNull String communeName) {

@@ -8,10 +8,12 @@ import java.util.Optional;
 
 public class Voivodeship implements Serializable {
     private String name;
+    private int id;
     private List<County> counties;
 
-    public Voivodeship(String name, List<County> counties) {
+    public Voivodeship(String name, int id, List<County> counties) {
         this.name = name;
+        this.id = id;
         this.counties = counties;
     }
 
@@ -21,6 +23,10 @@ public class Voivodeship implements Serializable {
 
     public List<County> getCounties() {
         return counties;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public Optional<County> getCountyByName(@NonNull String countyName) {

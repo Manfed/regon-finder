@@ -11,7 +11,7 @@ public class HomeControllerTest {
     @Test
     public void getRegons() throws Exception {
         HomeController homeController = new HomeController();
-        Location location = new Location("POMORSKIE", "kartuski", "Kartuzy obszar wiejski", "Dzierżążno");
+        Location location = new Location("POMORSKIE", "kartuski", "Kartuzy obszar wiejski", "Dzierżążno", "Dzierżążno");
 
         final StreamingResponseBody regons = homeController.getRegons(location, new MockHttpServletResponse());
 
